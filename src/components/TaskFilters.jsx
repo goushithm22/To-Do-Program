@@ -86,6 +86,7 @@ const TaskFilters = ({
                   {[
                     { id: 'all', name: 'All' },
                     { id: 'pending', name: 'Pending' },
+                    { id: 'progress', name: 'In Progress' },
                     { id: 'completed', name: 'Completed' }
                   ].map((status) => (
                     <Button

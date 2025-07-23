@@ -1,126 +1,127 @@
 import { useState } from 'react';
-import { Plus, StickyNote, Calendar, Tag, AlertCircle } from 'lucide-react';
+import { Plus, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CategorySelector } from './TaskCategories';
 import { PrioritySelector } from './TaskPriority';
 import { TaskDatePicker } from './TaskDatePicker';
+import { TaskLabelSelector } from './TaskLabels';
+import { cn } from '@/lib/utils';
 
 const TaskForm = ({ onAdd }) => {
-  const [newTask, setNewTask] = useState('');
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [text, setText] = useState('');
   const [category, setCategory] = useState(null);
   const [priority, setPriority] = useState(null);
   const [dueDate, setDueDate] = useState(null);
   const [notes, setNotes] = useState('');
+  const [labels, setLabels] = useState([]);
+  const [estimatedTime, setEstimatedTime] = useState('');
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-  const addTask = () => {
-    if (newTask.trim()) {
-      const task = {
-        id: Date.now(),
-        text: newTask.trim(),
-        completed: false,
-        createdAt: new Date().toISOString(),
-        category,
-        priority,
-        dueDate,
-        notes: notes.trim(),
-        progress: 0
-      };
-      onAdd(task);
-      
-      // Reset form
-      setNewTask('');
-      setCategory(null);
-      setPriority(null);
-      setDueDate(null);
-      setNotes('');
-      setIsExpanded(false);
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!text.trim()) return;
+
+    const newTask = {
+      id: Date.now(),
+      text: text.trim(),
+      status: 'pending',
+      completed: false,
+      category,
+      priority,
+      dueDate,
+      notes: notes.trim() || null,
+      labels: labels.length > 0 ? labels : null,
+      estimatedTime: estimatedTime ? parseInt(estimatedTime) : null,
+      actualTime: 0,
+      dependencies: [],
+      attachments: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    onAdd(newTask);
+    
+    // Reset form
+    setText('');
+    setCategory(null);
+    setPriority(null);
+    setDueDate(null);
+    setNotes('');
+    setLabels([]);
+    setEstimatedTime('');
+    setIsAdvancedOpen(false);
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      addTask();
-    }
-  };
+  const hasAdvancedOptions = category || priority || dueDate || notes || labels.length > 0 || estimatedTime;
 
   return (
-    <Card className="p-4 mb-6 shadow-soft">
-      <div className="space-y-3">
+    <Card className="p-4 mb-6 shadow-elevated border-2 bg-gradient-card animate-fade-in">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex gap-2">
           <Input
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="What needs to be done?"
-            className="flex-1"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Add a new task..."
+            className="flex-1 h-12 text-base border-2 focus:border-primary/50 transition-all duration-200"
+            autoFocus
           />
           <Button
-            onClick={addTask}
-            disabled={!newTask.trim()}
-            className="px-4"
+            type="submit"
+            disabled={!text.trim()}
+            className={cn(
+              "h-12 px-4 transition-all duration-200 shadow-md hover:shadow-lg",
+              !text.trim() ? "opacity-50" : "hover:scale-105"
+            )}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-5 w-5 mr-1" />
+            Add
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 px-2 text-xs"
-              >
-                <Tag className="h-3 w-3 mr-1" />
-                Options
-              </Button>
-            </CollapsibleTrigger>
-            
-            <CollapsibleContent className="mt-3">
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-2 block">
-                    Category
-                  </label>
+        <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+          <CollapsibleTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              className={cn(
+                "w-full justify-between h-10 transition-all duration-200",
+                hasAdvancedOptions && "bg-primary/10 text-primary border border-primary/20"
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <Settings2 className="h-4 w-4" />
+                <span>Advanced Options</span>
+                {hasAdvancedOptions && (
+                  <div className="h-2 w-2 bg-primary rounded-full animate-pulse" />
+                )}
+              </div>
+            </Button>
+          </CollapsibleTrigger>
+          
+          <CollapsibleContent>
+            <div className="pt-4 space-y-4 animate-slide-up">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Category</label>
                   <CategorySelector value={category} onChange={setCategory} />
                 </div>
-
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-2 block">
-                    Priority
-                  </label>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Priority</label>
                   <PrioritySelector value={priority} onChange={setPriority} />
                 </div>
-
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-2 block">
-                    Due Date
-                  </label>
-                  <TaskDatePicker date={dueDate} onChange={setDueDate} />
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-2 block">
-                    Notes
-                  </label>
-                  <Textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Add notes..."
-                    className="min-h-[60px] text-sm resize-none"
-                  />
-                </div>
               </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
-      </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Labels</label>
+                <TaskLabelSelector selectedLabels={labels} onChange={setLabels} />
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </form>
     </Card>
   );
 };

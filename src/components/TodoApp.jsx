@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Moon, Sun, GripVertical } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Moon, Sun, GripVertical, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TaskForm } from './TaskForm';
 import { TaskItem } from './TaskItem';
 import { TaskFilters } from './TaskFilters';
-import { TaskProgress } from './TaskProgress';
 
 const TodoApp = () => {
   const [tasks, setTasks] = useState([]);
@@ -60,7 +60,11 @@ const TodoApp = () => {
 
   const toggleTask = (id) => {
     setTasks(tasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
+      task.id === id ? { 
+        ...task, 
+        completed: !task.completed,
+        status: !task.completed ? 'completed' : 'pending'
+      } : task
     ));
   };
 
@@ -94,9 +98,12 @@ const TodoApp = () => {
     .filter(task => {
       const matchesSearch = task.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            (task.notes && task.notes.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      const taskStatus = task.status || 'pending';
       const matchesStatus = statusFilter === 'all' || 
-                           (statusFilter === 'completed' && task.completed) ||
-                           (statusFilter === 'pending' && !task.completed);
+                           (statusFilter === 'completed' && taskStatus === 'completed') ||
+                           (statusFilter === 'pending' && taskStatus !== 'completed');
+      
       const matchesCategory = !categoryFilter || task.category === categoryFilter;
       const matchesPriority = !priorityFilter || task.priority === priorityFilter;
       
@@ -110,42 +117,54 @@ const TodoApp = () => {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
 
-  const completedCount = tasks.filter(task => task.completed).length;
-  const totalProgress = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+  // Calculate statistics
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
+  const inProgressTasks = tasks.filter(task => task.status === 'progress').length;
+  const pendingTasks = tasks.filter(task => (task.status || 'pending') === 'pending').length;
+  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
-      <div className="container mx-auto max-w-2xl px-4 py-8">
+    <div className="min-h-screen bg-background transition-all duration-500">
+      {/* Background gradient overlay */}
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+      
+      <div className="relative container mx-auto max-w-4xl px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 animate-fade-in">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Enhanced Todo
+            <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3">
+              ProTask Manager
             </h1>
-            <div className="flex items-center gap-4">
-              <p className="text-muted-foreground">
-                {tasks.length > 0 && (
-                  `${completedCount} of ${tasks.length} tasks completed`
-                )}
-              </p>
-              {tasks.length > 0 && (
+            {totalTasks > 0 && (
+              <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <TaskProgress 
-                    progress={totalProgress} 
-                    onChange={() => {}} 
-                    disabled 
-                  />
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {completionRate}% Complete
+                  </span>
                 </div>
-              )}
-            </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-status-completed/10 border-status-completed/30 text-status-completed">
+                    {completedTasks} Done
+                  </Badge>
+                  <Badge variant="outline" className="bg-status-progress/10 border-status-progress/30 text-status-progress">
+                    {inProgressTasks} In Progress
+                  </Badge>
+                  <Badge variant="outline" className="bg-status-pending/10 border-status-pending/30 text-status-pending">
+                    {pendingTasks} Pending
+                  </Badge>
+                </div>
+              </div>
+            )}
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={toggleDarkMode}
-            className="p-2"
+            className="p-3 border-2 hover:border-primary/50 transition-all duration-200 hover:scale-105"
           >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
         </div>
 
@@ -165,15 +184,25 @@ const TodoApp = () => {
         />
 
         {/* Tasks List */}
-        <div className="space-y-2">
+        <div className="space-y-4">
           {filteredTasks.length === 0 ? (
-            <Card className="p-8 text-center shadow-soft">
-              <p className="text-muted-foreground">
-                {tasks.length === 0 
-                  ? "No tasks yet. Add one above to get started!"
-                  : "No tasks match your current filters."
-                }
-              </p>
+            <Card className="p-12 text-center shadow-elevated bg-gradient-card border-2 animate-fade-in">
+              <div className="space-y-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                  <TrendingUp className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {tasks.length === 0 ? "Ready to get productive?" : "No tasks match your filters"}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {tasks.length === 0 
+                      ? "Add your first task above and start organizing your work like a pro!"
+                      : "Try adjusting your search criteria or clearing the filters."
+                    }
+                  </p>
+                </div>
+              </div>
             </Card>
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
@@ -182,7 +211,7 @@ const TodoApp = () => {
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className="space-y-2"
+                    className="space-y-4"
                   >
                     {filteredTasks.map((task, index) => (
                       <Draggable 
@@ -194,20 +223,24 @@ const TodoApp = () => {
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className="relative"
+                            className="relative group"
                           >
                             <div
                               {...provided.dragHandleProps}
-                              className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing z-10"
+                              className={cn(
+                                "absolute left-3 top-6 text-muted-foreground/60 hover:text-muted-foreground cursor-grab active:cursor-grabbing z-10 transition-all duration-200",
+                                "opacity-0 group-hover:opacity-100 hover:scale-110"
+                              )}
                             >
-                              <GripVertical className="h-4 w-4" />
+                              <GripVertical className="h-5 w-5" />
                             </div>
-                            <div className="pl-8">
+                            <div className="pl-10">
                               <TaskItem
                                 task={task}
                                 onToggle={toggleTask}
                                 onDelete={deleteTask}
                                 onUpdate={updateTask}
+                                allTasks={tasks}
                                 isDragging={snapshot.isDragging}
                               />
                             </div>
@@ -224,9 +257,16 @@ const TodoApp = () => {
         </div>
 
         {/* Footer */}
-        {tasks.length > 0 && (
-          <div className="text-center mt-8 text-sm text-muted-foreground">
-            Drag tasks to reorder • Click options when adding tasks for more features
+        {totalTasks > 0 && (
+          <div className="text-center mt-12 space-y-2 animate-fade-in">
+            <div className="text-sm text-muted-foreground">
+              💡 <strong>Pro tip:</strong> Drag tasks to reorder • Use advanced options for power features
+            </div>
+            {completionRate === 100 && (
+              <div className="text-lg font-semibold text-primary animate-glow">
+                🎉 Congratulations! All tasks completed!
+              </div>
+            )}
           </div>
         )}
       </div>
