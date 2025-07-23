@@ -48,38 +48,41 @@ const TaskFilters = ({
             <Button
               variant="outline"
               size="sm"
-              className="h-10 px-3"
+              className="h-10 px-4 border-2 hover:border-primary/50 transition-all duration-200 hover:shadow-md"
             >
-              <Filter className="h-4 w-4 mr-1" />
+              <Filter className="h-4 w-4 mr-2" />
               Filter
               {hasActiveFilters && (
-                <Badge variant="secondary" className="ml-2 h-5 w-5 p-0 text-xs">
-                  !
+                <Badge variant="default" className="ml-2 h-5 w-5 p-0 text-xs animate-pulse">
+                  {[statusFilter !== 'all', categoryFilter, priorityFilter].filter(Boolean).length}
                 </Badge>
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80" align="end">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">Filters</h4>
+          <PopoverContent className="w-80 p-0 border-2 shadow-xl backdrop-blur-sm bg-card/95" align="end">
+            <div className="p-6 space-y-6">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-primary" />
+                  <h4 className="font-semibold text-lg">Filters</h4>
+                </div>
                 {hasActiveFilters && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={clearAllFilters}
-                    className="h-8 px-2 text-xs"
+                    className="h-8 px-3 text-xs font-medium hover:bg-destructive/10 hover:text-destructive"
                   >
                     Clear all
                   </Button>
                 )}
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-2 block">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground mb-3 block">
                   Status
                 </label>
-                <div className="flex gap-1">
+                <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: 'all', name: 'All' },
                     { id: 'pending', name: 'Pending' },
@@ -90,7 +93,7 @@ const TaskFilters = ({
                       variant={statusFilter === status.id ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => onStatusFilterChange(status.id)}
-                      className="text-xs"
+                      className="text-xs font-medium transition-all duration-200 hover:scale-105"
                     >
                       {status.name}
                     </Button>
@@ -98,18 +101,22 @@ const TaskFilters = ({
                 </div>
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-2 block">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground mb-3 block">
                   Category
                 </label>
-                <CategorySelector value={categoryFilter} onChange={onCategoryFilterChange} />
+                <div className="bg-muted/50 p-3 rounded-lg">
+                  <CategorySelector value={categoryFilter} onChange={onCategoryFilterChange} />
+                </div>
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-2 block">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground mb-3 block">
                   Priority
                 </label>
-                <PrioritySelector value={priorityFilter} onChange={onPriorityFilterChange} />
+                <div className="bg-muted/50 p-3 rounded-lg">
+                  <PrioritySelector value={priorityFilter} onChange={onPriorityFilterChange} />
+                </div>
               </div>
             </div>
           </PopoverContent>
