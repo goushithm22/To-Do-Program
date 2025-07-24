@@ -1,73 +1,103 @@
-# Welcome to your Lovable project
+# To-Do Program 📋
 
-## Project info
+A clean and functional **To-Do list application** built with **Vite**, **TypeScript**, **React**, **shadcn-ui**, and **Tailwind CSS**.  
+This project helped me structure reusable components, learn state management, and enhance TypeScript usage—with a touch of **AI-assisted module generation**.
 
-**URL**: https://lovable.dev/projects/9304011c-3013-4dae-9d47-e61c1b82f551
+> 💡 Some TypeScript module scaffolding and logic patterns were refined with the help of **AI autotools**, improving coding consistency and speed.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Project Overview
 
-**Use Lovable**
+- **Core Features**  
+  - Add, edit, complete, and delete tasks  
+  - Input validation and dynamic task lists  
+  - Clean UI using shadcn-ui components and Tailwind styling  
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9304011c-3013-4dae-9d47-e61c1b82f551) and start prompting.
+- **AI Enhancements**  
+  - AI-assisted generation of TypeScript interfaces and utility functions  
+  - Intelligent code suggestions to enforce best practices and consistency
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## ⚙️ Technologies Used
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Vite** – Fast development environment with HMR  
+- **TypeScript** – Strong typing for components and state  
+- **React** – Functional components and hooks for state management  
+- **shadcn-ui** – Prebuilt accessible components  
+- **Tailwind CSS** – Utility-first styling for responsive layouts
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 📁 File Structure
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+todo-program/
+│
+├── src/
+│   ├── components/       # TaskList, TaskItem, AddTaskForm
+│   ├── lib/              # Utility functions & TypeScript modules
+│   ├── App.tsx           # Main app container
+│   ├── index.tsx         # Entry point
+│   └── styles.css        # Global styles
+├── tsconfig.json
+└── package.json
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🎯 Learning Outcomes
 
-**Use GitHub Codespaces**
+- Structured reusable UI and logic components in React  
+- Enforced strong typing using TypeScript interfaces  
+- Learned how to manage state and side effects with hooks  
+- Integrated shadcn-ui for cohesive design and accessibility  
+- Enhanced productivity and code structure using AI-generated module patterns
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🧪 Getting Started
 
-This project is built with:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/goushithm22/To-Do-Program.git
+   cd To-Do-Program
+   ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## How can I deploy this project?
+3. Start development server:
+   ```bash
+   npm run dev
+   ```
 
-Simply open [Lovable](https://lovable.dev/projects/9304011c-3013-4dae-9d47-e61c1b82f551) and click on Share -> Publish.
+4. Open the app in your browser at `http://localhost:5173`
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 📌 Live Preview
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+*Add your GitHub Pages or Vercel preview link here if available*  
+e.g. `https://your-username.github.io/To-Do-Program/`
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+## 🔧 Future Improvements
+
+- Add persistence with localStorage or a backend  
+- Support user authentication and multi-user data  
+- Implement drag-and-drop ordering of tasks  
+- Add UI themes and dark mode toggle  
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — feel free to explore, fork, and improve!
+
+
+
